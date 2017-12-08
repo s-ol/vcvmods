@@ -52,20 +52,18 @@ CircleVCOWidget::CircleVCOWidget() {
   setPanel(SVG::load(assetPlugin(plugin, "res/CircleVCO.svg")));
 
   addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-  addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-  addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
   addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
   PJ301MPort p;
-  Davies1900hBlackKnob k;
+  RoundSmallBlackKnob k;
   Vec center = Vec(box.size.x, 0).minus(p.box.size).div(2);
   Vec kcenter = Vec(box.size.x, 0).minus(k.box.size).div(2);
 
-  addParam(createParam<Davies1900hBlackKnob>(kcenter.plus(Vec(0, 90)), module, CircleVCO::PITCH_PARAM, 0.0, 1.0, 0.0));
+  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec(0, 90)), module, CircleVCO::PITCH_PARAM, 0.0, 1.0, 0.0));
 
-  addInput(createInput<PJ301MPort>(center.plus(Vec(0, 180)), module, CircleVCO::PITCH_INPUT));
+  addInput(createInput<PJ301MPort>(center.plus(Vec(0, 144)), module, CircleVCO::PITCH_INPUT));
 
-  addOutput(createOutput<PJ301MPort>(center.plus(Vec(-18, 250)), module, CircleVCO::SIN_OUTPUT));
-  addOutput(createOutput<PJ301MPort>(center.plus(Vec( 18, 250)), module, CircleVCO::COS_OUTPUT));
-  addOutput(createOutput<PJ301MPort>(center.plus(Vec(0, 315)), module, CircleVCO::PHS_OUTPUT));
+  addOutput(createOutput<PJ301MPort>(center.plus(Vec(0, 218)), module, CircleVCO::SIN_OUTPUT));
+  addOutput(createOutput<PJ301MPort>(center.plus(Vec(0, 268)), module, CircleVCO::COS_OUTPUT));
+  addOutput(createOutput<PJ301MPort>(center.plus(Vec(0, 318)), module, CircleVCO::PHS_OUTPUT));
 }

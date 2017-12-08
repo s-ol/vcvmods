@@ -7,6 +7,7 @@ struct Modulo : Module {
   };
   enum InputIds {
     SIGNAL_INPUT,
+    GAIN_INPUT,
     NUM_INPUTS
   };
   enum OutputIds {
@@ -24,7 +25,7 @@ struct Modulo : Module {
 
 
 void Modulo::step() {
-  float gain = powf(2.0, params[GAIN_PARAM].value);
+  float gain = powf(2.0, params[GAIN_PARAM].value) + inputs[GAIN_INPUT].value;
   float val = inputs[SIGNAL_INPUT].value * gain;
   float stair = floorf(val);
   float wrap = val - stair;
@@ -43,14 +44,16 @@ ModuloWidget::ModuloWidget() {
   addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
   PJ301MPort p;
-  Davies1900hBlackKnob k;
+  RoundSmallBlackKnob k;
   Vec center = Vec(box.size.x, 0).minus(p.box.size).div(2);
   Vec kcenter = Vec(box.size.x, 0).minus(k.box.size).div(2);
 
-  addParam(createParam<Davies1900hBlackKnob>(kcenter.plus(Vec(0, 90)), module, Modulo::GAIN_PARAM, -3.0, 3.0, 0.0));
 
-  addInput(createInput<PJ301MPort>(center.plus(Vec(0, 145)), module, Modulo::SIGNAL_INPUT));
+  addInput(createInput<PJ301MPort>(center.plus(Vec(0, 120)), module, Modulo::SIGNAL_INPUT));
+  addInput(createInput<PJ301MPort>(center.plus(Vec(-15, 180)), module, Modulo::GAIN_INPUT));
 
-  addOutput(createOutput<PJ301MPort>(center.plus(Vec(0, 275)), module, Modulo::STAIR_OUTPUT));
-  addOutput(createOutput<PJ301MPort>(center.plus(Vec(0, 347)), module, Modulo::WRAP_OUTPUT));
+  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec(15, 180)), module, Modulo::GAIN_PARAM, -3.0, 3.0, 0.0));
+
+  addOutput(createOutput<PJ301MPort>(center.plus(Vec(0, 265)), module, Modulo::STAIR_OUTPUT));
+  addOutput(createOutput<PJ301MPort>(center.plus(Vec(0, 345)), module, Modulo::WRAP_OUTPUT));
 }
