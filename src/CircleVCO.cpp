@@ -27,22 +27,22 @@ struct CircleVCO : Module {
 
 
 void CircleVCO::step() {
-  float deltaTime = 1.0 / engineGetSampleRate();
+  float deltaTime = 1.0f / engineGetSampleRate();
 
   float pitch = params[PITCH_PARAM].value;
   pitch += inputs[PITCH_INPUT].value;
   pitch = clamp(pitch, -4.0f, 4.0f);
-  float freq = 200 * (powf(2.0, pitch) - powf(2.0, -4.0));
+  float freq = 200.0f * (pow(2.0f, pitch) - powf(2.0f, -4.0f));
 
   phase += freq * deltaTime;
-  while (phase >= 1.0)
-    phase -= 1.0;
+  while (phase >= 1.0f)
+    phase -= 1.0f;
 
-  float sine = sinf(2 * M_PI * phase);
-  float cosn = cosf(2 * M_PI * phase);
-  outputs[SIN_OUTPUT].value = sine * 5;
-  outputs[COS_OUTPUT].value = cosn * 5;
-  outputs[PHS_OUTPUT].value = phase * 5;
+  float sine = sin(2.0f * M_PI * phase);
+  float cosn = cos(2.0f * M_PI * phase);
+  outputs[SIN_OUTPUT].value = sine * 5.0f;
+  outputs[COS_OUTPUT].value = cosn * 5.0f;
+  outputs[PHS_OUTPUT].value = phase * 5.0f;
 }
 
 
