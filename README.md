@@ -1,6 +1,7 @@
-vcvmods (vcvrack-s-ol)
-======================
-Plugins for [VCV Rack](https://github.com/VCVRack/Rack). Designed for [Oscilloscope Music](https://oscilloscopemusic.com)
+vcvrack/s-ol
+============
+Plugins for [VCV Rack](https://github.com/VCVRack/Rack). Designed for [Oscilloscope Music](https://oscilloscopemusic.com)  
+An introductory guide video can be found [here](https://www.youtube.com/watch?v=DnxmfnkGxiY).
 
 ## Circle VCO
 Sinewave VCO with 90° phase output for drawing circles on an Oscilloscope (+-5V).
