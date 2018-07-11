@@ -30,9 +30,8 @@ void CircleVCO::step() {
   float deltaTime = 1.0f / engineGetSampleRate();
 
   float pitch = params[PITCH_PARAM].value;
-  pitch += inputs[PITCH_INPUT].value;
-  pitch = clamp(pitch, -4.0f, 4.0f);
-  float freq = 200.0f * (pow(2.0f, pitch) - powf(2.0f, -4.0f));
+  pitch += 12.0f * inputs[PITCH_INPUT].value;
+  float freq = 261.626f * powf(2.0f, pitch / 12.0f);
 
   phase += freq * deltaTime;
   while (phase >= 1.0f)
@@ -61,7 +60,7 @@ CircleVCOWidget::CircleVCOWidget(CircleVCO *module) : ModuleWidget(module) {
   Vec center = Vec(box.size.x, 0).minus(p.box.size).div(2);
   Vec kcenter = Vec(box.size.x, 0).minus(k.box.size).div(2);
 
-  addParam(ParamWidget::create<RoundSmallBlackKnob>(kcenter.plus(Vec(0, 90)), module, CircleVCO::PITCH_PARAM, 0.0, 1.0, 0.0));
+  addParam(ParamWidget::create<RoundSmallBlackKnob>(kcenter.plus(Vec(0, 90)), module, CircleVCO::PITCH_PARAM, -54.0f, 54.0f, 0.0f));
 
   addInput(Port::create<PJ301MPort>(center.plus(Vec(0, 144)), Port::INPUT, module, CircleVCO::PITCH_INPUT));
 
