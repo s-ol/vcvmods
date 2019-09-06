@@ -24,7 +24,9 @@ struct WrapComp : Module {
     NUM_LIGHTS
   };
 
-  WrapComp() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+  WrapComp() {
+    config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+  }
   void step() override;
 };
 
@@ -50,13 +52,14 @@ struct WrapCompWidget : ModuleWidget {
   WrapCompWidget(WrapComp *module);
 };
 
-WrapCompWidget::WrapCompWidget(WrapComp *module) : ModuleWidget(module) {
-  setPanel(SVG::load(assetPlugin(plugin, "res/WrapComp.svg")));
+WrapCompWidget::WrapCompWidget(WrapComp *module) {
+  setModule(module);
+  setPanel(SVG::load(assetPlugin(pluginInstance, "res/WrapComp.svg")));
 
-  addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-  addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-  addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-  addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+  addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+  addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+  addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+  addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
   PJ301MPort p;
   RoundSmallBlackKnob k;
@@ -65,21 +68,21 @@ WrapCompWidget::WrapCompWidget(WrapComp *module) : ModuleWidget(module) {
   Vec kcenter = Vec(box.size.x, 0).minus(k.box.size).div(2);
   Vec lcenter = Vec(box.size.x, 0).minus(l.box.size).div(2);
 
-  addInput(Port::create<PJ301MPort>(center.plus(Vec(0, 70)), Port::INPUT, module, WrapComp::SIGNAL_INPUT));
+  addInput(createPort<PJ301MPort>(center.plus(Vec(0, 70)), PortWidget::INPUT, module, WrapComp::SIGNAL_INPUT));
 
-  addParam(ParamWidget::create<RoundSmallBlackKnob>(kcenter.plus(Vec(25, 135)), module, WrapComp::OFFSET_PARAM, -5.0, 5.0, 0.0));
-  addInput(Port::create<PJ301MPort>(center.plus(Vec(-25, 135)), Port::INPUT, module, WrapComp::OFFSET_INPUT));
+  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec(25, 135)), module, WrapComp::OFFSET_PARAM, -5.0, 5.0, 0.0));
+  addInput(createPort<PJ301MPort>(center.plus(Vec(-25, 135)), PortWidget::INPUT, module, WrapComp::OFFSET_INPUT));
 
-  addParam(ParamWidget::create<RoundSmallBlackKnob>(kcenter.plus(Vec(25, 210)), module, WrapComp::RANGE_PARAM, -5.0, 5.0, 0.0));
-  addInput(Port::create<PJ301MPort>(center.plus(Vec(-25, 210)), Port::INPUT, module, WrapComp::RANGE_INPUT));
+  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec(25, 210)), module, WrapComp::RANGE_PARAM, -5.0, 5.0, 0.0));
+  addInput(createPort<PJ301MPort>(center.plus(Vec(-25, 210)), PortWidget::INPUT, module, WrapComp::RANGE_INPUT));
 
-  addChild(ModuleLightWidget::create<MediumLight<RedLight>>(lcenter.plus(Vec(-15, 255)), module, WrapComp::A_LIGHT));
-  addChild(ModuleLightWidget::create<MediumLight<RedLight>>(lcenter.plus(Vec( 15, 255)), module, WrapComp::B_LIGHT));
+  addChild(createLight<MediumLight<RedLight>>(lcenter.plus(Vec(-15, 255)), module, WrapComp::A_LIGHT));
+  addChild(createLight<MediumLight<RedLight>>(lcenter.plus(Vec( 15, 255)), module, WrapComp::B_LIGHT));
 
-  addParam(ParamWidget::create<RoundSmallBlackKnob>(kcenter.plus(Vec(-25, 280)), module, WrapComp::A_OUT_PARAM, -8.0, 8.0, 1.0));
-  addParam(ParamWidget::create<RoundSmallBlackKnob>(kcenter.plus(Vec( 25, 280)), module, WrapComp::B_OUT_PARAM, -8.0, 8.0, 0.0));
+  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec(-25, 280)), module, WrapComp::A_OUT_PARAM, -8.0, 8.0, 1.0));
+  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec( 25, 280)), module, WrapComp::B_OUT_PARAM, -8.0, 8.0, 0.0));
 
-  addOutput(Port::create<PJ301MPort>(center.plus(Vec(0, 315)), Port::OUTPUT, module, WrapComp::MAIN_OUTPUT));
+  addOutput(createPort<PJ301MPort>(center.plus(Vec(0, 315)), PortWidget::OUTPUT, module, WrapComp::MAIN_OUTPUT));
 }
 
-Model *modelWrapComp = Model::create<WrapComp, WrapCompWidget>("s-ol", "WrapComp", "Wrapping Comparator", LOGIC_TAG);
+Model *modelWrapComp = createModel<WrapComp, WrapCompWidget>("WrapComp");

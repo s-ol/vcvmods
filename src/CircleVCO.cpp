@@ -21,7 +21,9 @@ struct CircleVCO : Module {
 
   float phase = 0.0;
 
-  CircleVCO() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+  CircleVCO() {
+    config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+  }
   void step() override;
 };
 
@@ -49,24 +51,25 @@ struct CircleVCOWidget : ModuleWidget {
   CircleVCOWidget(CircleVCO *module);
 };
 
-CircleVCOWidget::CircleVCOWidget(CircleVCO *module) : ModuleWidget(module) {
-  setPanel(SVG::load(assetPlugin(plugin, "res/CircleVCO.svg")));
+CircleVCOWidget::CircleVCOWidget(CircleVCO *module) {
+  setModule(module);
+  setPanel(SVG::load(assetPlugin(pluginInstance, "res/CircleVCO.svg")));
 
-  addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-  addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+  addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+  addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
   PJ301MPort p;
   RoundSmallBlackKnob k;
   Vec center = Vec(box.size.x, 0).minus(p.box.size).div(2);
   Vec kcenter = Vec(box.size.x, 0).minus(k.box.size).div(2);
 
-  addParam(ParamWidget::create<RoundSmallBlackKnob>(kcenter.plus(Vec(0, 90)), module, CircleVCO::PITCH_PARAM, -54.0f, 54.0f, 0.0f));
+  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec(0, 90)), module, CircleVCO::PITCH_PARAM, -54.0f, 54.0f, 0.0f));
 
-  addInput(Port::create<PJ301MPort>(center.plus(Vec(0, 144)), Port::INPUT, module, CircleVCO::PITCH_INPUT));
+  addInput(createPort<PJ301MPort>(center.plus(Vec(0, 144)), PortWidget::INPUT, module, CircleVCO::PITCH_INPUT));
 
-  addOutput(Port::create<PJ301MPort>(center.plus(Vec(0, 218)), Port::OUTPUT, module, CircleVCO::SIN_OUTPUT));
-  addOutput(Port::create<PJ301MPort>(center.plus(Vec(0, 268)), Port::OUTPUT, module, CircleVCO::COS_OUTPUT));
-  addOutput(Port::create<PJ301MPort>(center.plus(Vec(0, 318)), Port::OUTPUT, module, CircleVCO::PHS_OUTPUT));
+  addOutput(createPort<PJ301MPort>(center.plus(Vec(0, 218)), PortWidget::OUTPUT, module, CircleVCO::SIN_OUTPUT));
+  addOutput(createPort<PJ301MPort>(center.plus(Vec(0, 268)), PortWidget::OUTPUT, module, CircleVCO::COS_OUTPUT));
+  addOutput(createPort<PJ301MPort>(center.plus(Vec(0, 318)), PortWidget::OUTPUT, module, CircleVCO::PHS_OUTPUT));
 }
 
-Model *modelCircleVCO = Model::create<CircleVCO, CircleVCOWidget>("s-ol", "CircleVCO", "Circle VCO", OSCILLATOR_TAG, VISUAL_TAG);
+Model *modelCircleVCO = createModel<CircleVCO, CircleVCOWidget>("CircleVCO");

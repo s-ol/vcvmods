@@ -19,7 +19,9 @@ struct Modulo : Module {
     NUM_LIGHTS
   };
 
-  Modulo() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+  Modulo() {
+    config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+  }
   void step() override;
 };
 
@@ -39,11 +41,12 @@ struct ModuloWidget : ModuleWidget {
   ModuloWidget(Modulo *module);
 };
 
-ModuloWidget::ModuloWidget(Modulo *module) : ModuleWidget(module) {
-  setPanel(SVG::load(assetPlugin(plugin, "res/Modulo.svg")));
+ModuloWidget::ModuloWidget(Modulo *module) {
+  setModule(module);
+  setPanel(SVG::load(assetPlugin(pluginInstance, "res/Modulo.svg")));
 
-  addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-  addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+  addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+  addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
   PJ301MPort p;
   RoundSmallBlackKnob k;
@@ -51,13 +54,13 @@ ModuloWidget::ModuloWidget(Modulo *module) : ModuleWidget(module) {
   Vec kcenter = Vec(box.size.x, 0).minus(k.box.size).div(2);
 
 
-  addInput(Port::create<PJ301MPort>(center.plus(Vec(0, 120)), Port::INPUT, module, Modulo::SIGNAL_INPUT));
-  addInput(Port::create<PJ301MPort>(center.plus(Vec(-15, 180)), Port::INPUT, module, Modulo::GAIN_INPUT));
+  addInput(createPort<PJ301MPort>(center.plus(Vec(0, 120)), PortWidget::INPUT, module, Modulo::SIGNAL_INPUT));
+  addInput(createPort<PJ301MPort>(center.plus(Vec(-15, 180)), PortWidget::INPUT, module, Modulo::GAIN_INPUT));
 
-  addParam(ParamWidget::create<RoundSmallBlackKnob>(kcenter.plus(Vec(15, 180)), module, Modulo::GAIN_PARAM, -3.0, 3.0, 0.0));
+  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec(15, 180)), module, Modulo::GAIN_PARAM, -3.0, 3.0, 0.0));
 
-  addOutput(Port::create<PJ301MPort>(center.plus(Vec(0, 265)), Port::OUTPUT, module, Modulo::STAIR_OUTPUT));
-  addOutput(Port::create<PJ301MPort>(center.plus(Vec(0, 345)), Port::OUTPUT, module, Modulo::WRAP_OUTPUT));
+  addOutput(createPort<PJ301MPort>(center.plus(Vec(0, 265)), PortWidget::OUTPUT, module, Modulo::STAIR_OUTPUT));
+  addOutput(createPort<PJ301MPort>(center.plus(Vec(0, 345)), PortWidget::OUTPUT, module, Modulo::WRAP_OUTPUT));
 }
 
-Model *modelModulo = Model::create<Modulo, ModuloWidget>("s-ol", "Modulo", "Modulo", LOGIC_TAG);
+Model *modelModulo = createModel<Modulo, ModuloWidget>("Modulo");
