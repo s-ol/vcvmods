@@ -23,16 +23,17 @@ struct CircleVCO : Module {
 
   CircleVCO() {
     config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+    configParam(PITCH_PARAM, -54.0f, 54.0f, 0.0f);
   }
-  void step() override;
+  void process(const ProcessArgs &args) override;
 };
 
 
-void CircleVCO::step() {
-  float deltaTime = 1.0f / engineGetSampleRate();
+void CircleVCO::process(const ProcessArgs &args) {
+  float deltaTime = 1.0f / args.sampleRate;
 
-  float pitch = params[PITCH_PARAM].value;
-  pitch += 12.0f * inputs[PITCH_INPUT].value;
+  float pitch = params[PITCH_PARAM].getValue();
+  pitch += 12.0f * inputs[PITCH_INPUT].getVoltage();
   float freq = 261.626f * powf(2.0f, pitch / 12.0f);
 
   phase += freq * deltaTime;
@@ -41,9 +42,9 @@ void CircleVCO::step() {
 
   float sine = sin(2.0f * M_PI * phase);
   float cosn = cos(2.0f * M_PI * phase);
-  outputs[SIN_OUTPUT].value = sine * 5.0f;
-  outputs[COS_OUTPUT].value = cosn * 5.0f;
-  outputs[PHS_OUTPUT].value = phase * 5.0f;
+  outputs[SIN_OUTPUT].setVoltage(sine * 5.0f);
+  outputs[COS_OUTPUT].setVoltage(cosn * 5.0f);
+  outputs[PHS_OUTPUT].setVoltage(phase * 5.0f);
 }
 
 
@@ -53,7 +54,7 @@ struct CircleVCOWidget : ModuleWidget {
 
 CircleVCOWidget::CircleVCOWidget(CircleVCO *module) {
   setModule(module);
-  setPanel(SVG::load(assetPlugin(pluginInstance, "res/CircleVCO.svg")));
+  setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/CircleVCO.svg")));
 
   addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
   addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
@@ -63,13 +64,13 @@ CircleVCOWidget::CircleVCOWidget(CircleVCO *module) {
   Vec center = Vec(box.size.x, 0).minus(p.box.size).div(2);
   Vec kcenter = Vec(box.size.x, 0).minus(k.box.size).div(2);
 
-  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec(0, 90)), module, CircleVCO::PITCH_PARAM, -54.0f, 54.0f, 0.0f));
+  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec(0, 90)), module, CircleVCO::PITCH_PARAM));
 
-  addInput(createPort<PJ301MPort>(center.plus(Vec(0, 144)), PortWidget::INPUT, module, CircleVCO::PITCH_INPUT));
+  addInput(createInput<PJ301MPort>(center.plus(Vec(0, 144)), module, CircleVCO::PITCH_INPUT));
 
-  addOutput(createPort<PJ301MPort>(center.plus(Vec(0, 218)), PortWidget::OUTPUT, module, CircleVCO::SIN_OUTPUT));
-  addOutput(createPort<PJ301MPort>(center.plus(Vec(0, 268)), PortWidget::OUTPUT, module, CircleVCO::COS_OUTPUT));
-  addOutput(createPort<PJ301MPort>(center.plus(Vec(0, 318)), PortWidget::OUTPUT, module, CircleVCO::PHS_OUTPUT));
+  addOutput(createOutput<PJ301MPort>(center.plus(Vec(0, 218)), module, CircleVCO::SIN_OUTPUT));
+  addOutput(createOutput<PJ301MPort>(center.plus(Vec(0, 268)), module, CircleVCO::COS_OUTPUT));
+  addOutput(createOutput<PJ301MPort>(center.plus(Vec(0, 318)), module, CircleVCO::PHS_OUTPUT));
 }
 
 Model *modelCircleVCO = createModel<CircleVCO, CircleVCOWidget>("CircleVCO");
