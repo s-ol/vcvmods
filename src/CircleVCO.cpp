@@ -1,8 +1,8 @@
-#include "s-ol.hpp"
+#include "plugin.hpp"
 
 struct CircleVCO : Module {
   enum ParamIds {
-    PITCH_PARAM,
+    FREQ_PARAM,
     NUM_PARAMS
   };
   enum InputIds {
@@ -23,7 +23,7 @@ struct CircleVCO : Module {
 
   CircleVCO() {
     config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-    configParam(PITCH_PARAM, -54.0f, 54.0f, 0.0f);
+    configParam(FREQ_PARAM, -54.0f, 54.0f, 0.0f, "Frequency", " Hz", dsp::FREQ_SEMITONE, dsp::FREQ_C4);
   }
   void process(const ProcessArgs &args) override;
 };
@@ -32,9 +32,9 @@ struct CircleVCO : Module {
 void CircleVCO::process(const ProcessArgs &args) {
   float deltaTime = 1.0f / args.sampleRate;
 
-  float pitch = params[PITCH_PARAM].getValue();
-  pitch += 12.0f * inputs[PITCH_INPUT].getVoltage();
-  float freq = 261.626f * powf(2.0f, pitch / 12.0f);
+  float pitch = params[FREQ_PARAM].getValue() / 12.f;
+  pitch += inputs[PITCH_INPUT].getVoltage();
+  float freq = dsp::FREQ_C4 * powf(2.f, pitch);
 
   phase += freq * deltaTime;
   while (phase >= 1.0f)
@@ -64,7 +64,7 @@ CircleVCOWidget::CircleVCOWidget(CircleVCO *module) {
   Vec center = Vec(box.size.x, 0).minus(p.box.size).div(2);
   Vec kcenter = Vec(box.size.x, 0).minus(k.box.size).div(2);
 
-  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec(0, 90)), module, CircleVCO::PITCH_PARAM));
+  addParam(createParam<RoundSmallBlackKnob>(kcenter.plus(Vec(0, 90)), module, CircleVCO::FREQ_PARAM));
 
   addInput(createInput<PJ301MPort>(center.plus(Vec(0, 144)), module, CircleVCO::PITCH_INPUT));
 

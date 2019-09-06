@@ -1,4 +1,4 @@
-#include "s-ol.hpp"
+#include "plugin.hpp"
 
 struct Modulo : Module {
   enum ParamIds {
@@ -22,6 +22,7 @@ struct Modulo : Module {
   Modulo() {
     config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
     configParam(GAIN_PARAM, -3.0, 3.0, 0.0);
+    configParam(GAIN_PARAM, -3.0f, 3.0f, 0.0f, "Gain", "%", 2.0f, 100.0f);
   }
   void process(const ProcessArgs &args) override;
 };

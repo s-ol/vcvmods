@@ -1,4 +1,4 @@
-#include "s-ol.hpp"
+#include "plugin.hpp"
 
 struct WrapComp : Module {
   enum ParamIds {
@@ -26,10 +26,10 @@ struct WrapComp : Module {
 
   WrapComp() {
     config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-    configParam(OFFSET_PARAM, -5.0, 5.0, 0.0);
-    configParam(RANGE_PARAM, -5.0, 5.0, 0.0);
-    configParam(A_OUT_PARAM, -8.0, 8.0, 1.0);
-    configParam(B_OUT_PARAM, -8.0, 8.0, 0.0);
+    configParam(OFFSET_PARAM, -5.0f, 5.0f, 0.0f, "Window Offset", " V");
+    configParam(RANGE_PARAM, -5.0f, 5.0f, 0.0f, "Window Size", " V");
+    configParam(A_OUT_PARAM, -8.0f, 8.0f, 8.0f, "A Output", " V");
+    configParam(B_OUT_PARAM, -8.0f, 8.0f, 0.0f, "B Output", " V");
   }
   void process(const ProcessArgs &args) override;
 };
